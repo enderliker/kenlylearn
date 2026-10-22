@@ -91,18 +91,18 @@
 **Description:** Configure NextAuth.js v5 with Google OAuth, GitHub OAuth, and Credentials provider using Argon2id password verification. Implement session callbacks and middleware protecting authenticated routes.
 
 **Acceptance criteria:**
-- [ ] `auth.ts` / NextAuth v5 configured with Drizzle adapter
-- [ ] Google OAuth provider configured
-- [ ] GitHub OAuth provider configured
-- [ ] Credentials provider: validates email + password using `argon2.verify(user.passwordHash, password)`
-- [ ] Registration API route (`POST /api/auth/register`): hashes password with Argon2id and creates user
-- [ ] Session callback injects `user.id` into session object
-- [ ] Middleware protecting `/upload`, `/exams`, `/settings`, and API routes from unauthenticated access
+- [x] `auth.ts` / NextAuth v5 configured with Drizzle adapter
+- [x] Google OAuth provider configured
+- [x] GitHub OAuth provider configured
+- [x] Credentials provider: validates email + password using `argon2.verify(user.passwordHash, password)`
+- [x] Registration API route (`POST /api/auth/register`): hashes password with Argon2id and creates user
+- [x] Session callback injects `user.id` into session object
+- [x] Middleware protecting `/upload`, `/exams`, `/settings`, and API routes from unauthenticated access
 
 **Verification:**
-- [ ] Register user with email/password succeeds and stores Argon2id hash
-- [ ] Login with valid credentials succeeds; invalid password returns 401
-- [ ] Unauthenticated requests to protected routes redirect to `/login`
+- [x] Register user with email/password succeeds and stores Argon2id hash
+- [x] Login with valid credentials succeeds; invalid password returns 401
+- [x] Unauthenticated requests to protected routes redirect to `/login`
 
 **Dependencies:** Tasks 1.5.1, 1.5.2
 
@@ -121,15 +121,15 @@
 **Description:** Create sleek, dark minimalist authentication interfaces for login and registration, supporting OAuth one-click buttons (Google, GitHub) and email/password fields with validation.
 
 **Acceptance criteria:**
-- [ ] Sign in page (`/login`) with Google, GitHub, and email/password options
-- [ ] Sign up page (`/register`) with name, email, password confirmation, and password strength guidance
-- [ ] Loading states, disabled buttons during submission, and clear error notifications
-- [ ] Header/Sidebar updated with user avatar, name, and Sign Out button
-- [ ] Clean dark aesthetic matching the system tokens (`#09090b` zinc)
+- [x] Sign in page (`/login`) with Google, GitHub, and email/password options
+- [x] Sign up page (`/register`) with name, email, password confirmation, and password strength guidance
+- [x] Loading states, disabled buttons during submission, and clear error notifications
+- [x] Header/Sidebar updated with user avatar, name, and Sign Out button
+- [x] Clean dark aesthetic matching the system tokens (`#09090b` zinc)
 
 **Verification:**
-- [ ] User can sign up, log in, view their profile name in header, and log out cleanly
-- [ ] Responsive layout across mobile and desktop viewports
+- [x] User can sign up, log in, view their profile name in header, and log out cleanly
+- [x] Responsive layout across mobile and desktop viewports
 
 **Dependencies:** Task 1.5.3
 
@@ -149,17 +149,17 @@
 **Description:** Build the settings interface allowing each user to provide, update, validate, and delete their personal NVIDIA NIM API Key. Store keys securely using AES-256-GCM.
 
 **Acceptance criteria:**
-- [ ] Route `/settings`: Section for "NVIDIA API Configuration"
-- [ ] Form to input API key (password-masked field with show/hide toggle)
-- [ ] API endpoint `POST /api/settings/api-key`: encrypts key with AES-256-GCM and updates `user_settings`
-- [ ] API endpoint `GET /api/settings/api-key`: returns masked key status (never plaintext key)
-- [ ] "Test Connection" button: validates key against NVIDIA NIM `/v1/models` endpoint
-- [ ] In-memory decryption utility: `getUserApiKey(userId: string): Promise<string>`
+- [x] Route `/settings`: Section for "NVIDIA API Configuration"
+- [x] Form to input API key (password-masked field with show/hide toggle)
+- [x] API endpoint `POST /api/settings/api-key`: encrypts key with AES-256-GCM and updates `user_settings`
+- [x] API endpoint `GET /api/settings/api-key`: returns masked key status (never plaintext key)
+- [x] "Test Connection" button: validates key against NVIDIA NIM `/v1/models` endpoint
+- [x] In-memory decryption utility: `getUserApiKey(userId: string): Promise<string>`
 
 **Verification:**
-- [ ] User inputs key -> saved encrypted in DB -> UI displays masked `nvapi-****...****`
-- [ ] Database inspection proves key is stored encrypted with IV and tag
-- [ ] Test connection verifies key validity with NVIDIA API
+- [x] User inputs key -> saved encrypted in DB -> UI displays masked `nvapi-****...****`
+- [x] Database inspection proves key is stored encrypted with IV and tag
+- [x] Test connection verifies key validity with NVIDIA API
 
 **Dependencies:** Tasks 1.5.1, 1.5.2, 1.5.3
 
