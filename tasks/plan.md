@@ -1,146 +1,125 @@
-# Implementation Plan: StudyAI — Aplicación de Estudio con IA
+# Implementation Plan: StudyAI — Multi-Tenant Knowledge Retention Platform
 
 ## Overview
 
-StudyAI es una aplicación web de estudio personal inspirada en Astra AI. El usuario sube materiales de estudio (PDFs, imágenes, textos) y la IA (NVIDIA Nemotron-3 Ultra 550B) genera resúmenes claros, explicaciones sencillas, y exámenes simulacro con múltiples formatos de preguntas (opción múltiple, verdadero/falso, respuesta abierta, completar espacios). La aplicación está diseñada para un solo usuario (el dueño) con una interfaz moderna, limpia y responsive.
+StudyAI is transitioning from a local personal experiment into a **production-ready, public multi-tenant SaaS application** designed for deployment on **Vercel**. Students and researchers authenticate via OAuth (GitHub, Google) or traditional credentials (Email + Password with **Argon2id** hashing). 
 
-## Tech Stack
+Each user configures their own personal **NVIDIA NIM API Key** via a secure settings dashboard. The key is encrypted at rest using **AES-256-GCM**. The backend decrypts the user's key strictly in-memory during inference requests to `nvidia/nemotron-3-ultra-550b-a55b` (MoE architecture, up to 1M context tokens), generating executive study summaries, multi-tier conceptual explanations, and active-recall mock examinations.
 
-| Capa | Tecnología | Justificación |
-|------|-----------|---------------|
-| **Frontend** | Next.js 14 (App Router) + TypeScript + Tailwind CSS + shadcn/ui | SSR, componentes modernos, desarrollo rápido |
-| **Backend/API** | Next.js API Routes (Route Handlers) | Mismo proyecto, sin server separado |
-| **Base de datos** | SQLite via Drizzle ORM | Simple, sin infraestructura extra, perfecto para app personal |
-| **LLM** | NVIDIA Nemotron-3 Ultra 550B via API OpenAI-compatible (`@ai-sdk/openai-compatible` + AI SDK) | El modelo que el usuario eligió. Context: 1M tokens. Soporta reasoning mode. |
-| **Procesamiento PDF** | `pdf-parse` (Node.js) | Extraer texto de PDFs |
-| **OCR para imágenes** | Tesseract.js (server-side en API routes) | Extraer texto de imágenes |
-| **Almacenamiento archivos** | Sistema de archivos local (`./uploads`) | Simple, app personal |
-| **Streaming** | Vercel AI SDK (`ai` package) | StreamingTextResponse nativo con Next.js |
+---
 
-## Architecture Decisions
+## Security Architecture & Threat Model
 
-1. **Monorepo Next.js** — Frontend y backend en un solo proyecto para simplicidad. No necesitamos microservicios para una app personal.
-
-2. **SQLite + Drizzle ORM** — Base de datos embebida sin necesidad de PostgreSQL/MySQL. Drizzle da type-safety y migraciones. Para una app personal es perfecto.
-
-3. **API OpenAI-compatible + AI SDK** — El API de NVIDIA NIM usa el formato OpenAI. Usamos `@ai-sdk/openai-compatible` (Vercel AI SDK) que se integra nativamente con Next.js para streaming. Base URL: `https://integrate.api.nvidia.com/v1`, modelo: `nvidia/nemotron-3-ultra-550b-a55b`.
-
-4. **Pipeline de extracción de texto** — Nemotron-3 Ultra es text-only (no procesa imágenes directamente). Necesitamos extraer texto de PDFs con `pdf-parse` y de imágenes con OCR (Tesseract.js) antes de enviarlo al modelo.
-
-5. **Streaming para respuestas largas** — Los resúmenes y explicaciones pueden ser largos. Usamos streaming SSE via AI SDK para mostrar las respuestas progresivamente.
-
-6. **Reasoning mode** — El modelo soporta reasoning configurable via `extra_body.chat_template_kwargs.enable_thinking`. Lo usamos activado para evaluación de respuestas abiertas (necesita razonar) y desactivado para generación rápida de resúmenes.
-
-7. **Context window masivo (1M tokens)** — El modelo soporta hasta 1M tokens de contexto, lo que permite procesar materiales muy largos sin necesidad de chunking agresivo. Aun así implementamos chunking para materiales extremadamente largos.
-
-8. **Sin login, sin auth** — App personal para un solo usuario. Sin middleware de autenticación.
-
-9. **Dark mode only** — Sin toggle, sin modo claro. Colores oscuros con acentos sutiles. Sin gradientes ni decoraciones excesivas. Tipografía limpia.
-
-10. **Rate limiting local (40 RPM)** — La API gratis tiene 40 requests/minuto. Implementamos un rate limiter simple en el cliente para evitar errores 429. Cola de requests con delay si se acerca al límite.
-
-11. **Persistencia total** — Todo se guarda en la DB: resúmenes, explicaciones, exámenes, respuestas, evaluaciones. Nada es efímero. El usuario puede volver a cualquier material y ver todo lo generado.
-
-6. **Estructura de "Materias"** — Los materiales se organizan en materias/cursos como Astra AI para mantener el contexto separado.
-
-## Dependency Graph
+User security, credential integrity, and multi-tenant isolation are the paramount requirements of this platform:
 
 ```
-SQLite Schema (Drizzle)
-    │
-    ├── API Models / Types (TypeScript)
-    │       │
-    │       ├── Upload & Text Extraction Pipeline
-    │       │       │
-    │       │       └── Material CRUD API
-    │       │               │
-    │       │               └── Upload UI Component
-    │       │
-    │       ├── AI Service (Nemotron API)
-    │       │       │
-    │       │       ├── Summary Generation API
-    │       │       │       └── Summary UI
-    │       │       │
-    │       │       ├── Explanation Generation API
-    │       │       │       └── Explanation UI
-    │       │       │
-    │       │       └── Quiz Generation API
-    │       │               └── Quiz UI (MCQ, T/F, Open, Fill-blank)
-    │       │
-    │       └── Progress Tracking
-    │               └── Dashboard UI
-    │
-    └── Seed Data / Migrations
+┌────────────────────────────────────────────────────────┐
+│                   Vercel Edge / TLS                    │
+└──────────────────────────┬─────────────────────────────┘
+                           │
+             [HTTPS / CSRF Protection]
+                           │
+                           ▼
+┌────────────────────────────────────────────────────────┐
+│             NextAuth.js v5 Authentication              │
+│  - Google OAuth 2.0 (State Verification)               │
+│  - GitHub OAuth (State Verification)                   │
+│  - Email + Password (Salted Argon2id Hashing)          │
+│  - Encrypted, HttpOnly, Secure Session Cookies         │
+└──────────────────────────┬─────────────────────────────┘
+                           │
+             [Tenant Context: session.user.id]
+                           │
+                           ▼
+┌────────────────────────────────────────────────────────┐
+│             Data Access & Isolation Layer              │
+│  - Strict IDOR Prevention: WHERE user_id = :userId     │
+│  - API Keys Encrypted at Rest: AES-256-GCM             │
+│    (Secret Key + Unique IV + Auth Tag per user)        │
+│  - Zero Logging of Decrypted Secrets or Auth Headers   │
+└──────────────────────────┬─────────────────────────────┘
+                           │
+                           ▼
+┌────────────────────────────────────────────────────────┐
+│            Database Layer (Drizzle + LibSQL)           │
+│  - Multi-tenant relational schema                      │
+│  - Users, Accounts, Sessions, Materials, Exams         │
+└────────────────────────────────────────────────────────┘
 ```
 
-## Task List
+### Security Guardrails:
+1. **Password Storage (Argon2id)**:
+   - Plaintext passwords are never persisted under any condition.
+   - Hashing is performed using `Argon2id` with OWASP-recommended parameters (minimum 64 MiB memory cost, 3 iterations, 1 parallelism).
+2. **API Key Encryption at Rest (AES-256-GCM)**:
+   - NVIDIA API keys are encrypted before insertion into the database.
+   - Storage fields: `encrypted_api_key` (hex/base64), `key_iv` (12 bytes), and `key_tag` (16 bytes authentication tag).
+   - Master encryption key derived from environment variable `ENCRYPTION_SECRET` (256-bit).
+   - Keys are decrypted only within the execution scope of an inference call and never sent to the browser or written to logs.
+3. **Multi-Tenant Data Isolation (Anti-IDOR)**:
+   - All relational entities (`materials`, `exams`, `questions`, `user_answers`, `subjects`, `generated_content`) enforce a non-nullable foreign key referencing `users.id`.
+   - Every read and mutation query strictly validates ownership against `session.user.id`.
+4. **Vercel Serverless Compatibility**:
+   - The application runs on serverless, stateless Node.js runtimes.
+   - Local SQLite file access (`better-sqlite3`) is replaced with **LibSQL / Turso** (`@libsql/client`) or serverless connection pooling, enabling seamless SQLite schema compatibility locally and over HTTP/WSS on Vercel.
 
-Tasks tracked in `tasks/todo.md`.
+---
 
-### Phase 1: Foundation (Proyecto + DB + Estructura base)
-- [ ] Task 1: Scaffold del proyecto Next.js con dependencias
-- [ ] Task 2: Schema de base de datos y migraciones
-- [ ] Task 3: Layout principal y navegación
+## Architectural Decisions
 
-### Checkpoint: Foundation
-- [ ] El proyecto compila sin errores
-- [ ] La DB se crea con las tablas correctas
-- [ ] La navegación funciona entre páginas
+| Decision | Selection | Rationale |
+|---|---|---|
+| **Hosting Platform** | Vercel | Global edge routing, automated CI/CD, Next.js 14 App Router native integration |
+| **Authentication** | NextAuth.js (Auth.js v5) | Standard for Next.js 14, supports Google, GitHub, and Credentials providers with Drizzle adapter |
+| **Password Hashing** | Argon2id (`@node-rs/argon2`) | State-of-the-art password hashing algorithm resistant to GPU cracking and side-channel attacks |
+| **Credential Encryption** | `node:crypto` AES-256-GCM | Authenticated symmetric encryption preventing ciphertext tampering and credential theft |
+| **Database** | LibSQL (`@libsql/client`) + Drizzle ORM | Maintains SQLite syntax and local development speed, while scaling to serverless edge DBs (Turso) for Vercel |
+| **Inference Model** | NVIDIA Nemotron-3 Ultra 550B | Mixture of Experts architecture, 1M context tokens, reasoning mode |
+| **Per-User Rate Limiting** | Sliding Window Token Bucket | Enforces NVIDIA's 40 RPM limit on a per-user API key basis |
 
-### Phase 2: Upload & Extracción de Texto
-- [ ] Task 4: Pipeline de extracción de texto (PDF + imágenes + texto plano)
-- [ ] Task 5: API de upload y CRUD de materiales
-- [ ] Task 6: UI de upload con drag-and-drop y gestión de materiales
+---
 
-### Checkpoint: Upload
-- [ ] Se puede subir un PDF y ver el texto extraído
-- [ ] Se puede subir una imagen y ver el texto OCR
-- [ ] Los materiales se guardan en la DB y se pueden listar/eliminar
+## Phase Roadmap
 
-### Phase 3: Generación con IA — Resúmenes y Explicaciones
-- [ ] Task 7: Servicio de IA (wrapper Nemotron API con streaming)
-- [ ] Task 8: API y UI de resúmenes
-- [ ] Task 9: API y UI de explicaciones sencillas
+### Phase 1: Foundation & Dark UI Shell ✅ (Completed)
+- Scaffold Next.js 14 App Router, TypeScript (Strict), Tailwind CSS.
+- Dark-mode minimalist UI layout (Sidebar, Header, Dashboard, Subjects, Upload, Exams).
+- Base schema and client modules in English.
 
-### Checkpoint: IA Básica
-- [ ] Se genera un resumen desde un material subido
-- [ ] Se genera una explicación sencilla de un tema
-- [ ] Las respuestas se muestran con streaming
+### Phase 1.5: Multi-Tenant Security & Authentication Layer (Next Target)
+- **Task 1.5.1**: Multi-tenant database schema upgrade (Users, Accounts, Sessions, User Settings with encrypted credentials, `user_id` foreign keys on all data tables).
+- **Task 1.5.2**: AES-256-GCM Encryption / Decryption utility service.
+- **Task 1.5.3**: NextAuth.js v5 setup (Google OAuth, GitHub OAuth, and Credentials with Argon2id).
+- **Task 1.5.4**: Authentication UI (Login, Register, Error states, Session indicators in Header/Sidebar).
+- **Task 1.5.5**: User Settings & API Key Management UI (Save, mask, validate, and test NVIDIA API key).
 
-### Phase 4: Exámenes Simulacro
-- [ ] Task 10: API de generación de exámenes (múltiples formatos)
-- [ ] Task 11: UI de examen — Opción múltiple y Verdadero/Falso
-- [ ] Task 12: UI de examen — Respuesta abierta y Completar espacios
-- [ ] Task 13: Evaluación de respuestas y retroalimentación con IA
+### Phase 2: Multi-Modal Ingestion Pipeline (ON HOLD — Awaiting explicit user instruction)
+- Serverless-compatible PDF text extraction (`pdf-parse`).
+- Client/Serverless OCR processing (`tesseract.js`).
+- Upload route handlers with user-scoped storage and validation.
 
-### Checkpoint: Exámenes
-- [ ] Se genera un examen con preguntas variadas desde un material
-- [ ] El usuario puede responder cada tipo de pregunta
-- [ ] Se evalúan las respuestas y se da feedback
+### Phase 3: AI Synthesis Engine (Resumés & Deep Explanations)
+- NVIDIA NIM connector with user-decrypted API keys.
+- Streaming responses (SSE) for structured summaries and 3-tier explanations.
+- Rate-limiting guardrail per user.
 
-### Phase 5: Dashboard y Progreso
-- [ ] Task 14: Tracking de progreso y resultados de exámenes
-- [ ] Task 15: Dashboard con estadísticas y áreas de mejora
+### Phase 4: Multi-Format Mock Examinations
+- Exam generation (MCQ, True/False, Open-ended, Fill-in-the-blank).
+- Active-recall assessment runner with immediate pedagogical feedback.
+- AI evaluation of open-ended answers with scoring and reasoning traces.
 
-### Checkpoint: Completo
-- [ ] Flujo completo funcional: subir → resumir → estudiar → examinar
-- [ ] Dashboard muestra progreso real
-- [ ] Revisión final antes de usar en producción
+### Phase 5: Longitudinal Progress Dashboard
+- Aggregate retention metrics, completed exams, subject mastery percentages.
+- Weak topic discovery and automated recommendation triggers.
+
+---
 
 ## Risks and Mitigations
 
 | Risk | Impact | Mitigation |
-|------|--------|------------|
-| Nemotron API tiene rate limits o créditos limitados | High | Cachear respuestas generadas en la DB. No regenerar si ya existe. Mostrar créditos restantes si es posible. |
-| OCR de imágenes con mala calidad | Medium | Permitir al usuario editar el texto extraído antes de procesar con IA. Mostrar preview del texto. |
-| PDFs con tablas/gráficos complejos no extraen bien | Medium | Informar al usuario qué se extrajo. Permitir pegar texto manualmente como fallback. |
-| Respuestas largas del modelo exceden tokens | Medium | Limitar max_tokens y paginar contenido. Resumir por secciones si el material es muy largo. |
-| Materiales muy grandes exceden contexto (1M tokens) | Low | El modelo soporta 1M tokens, pero textos gigantes se dividen en chunks y se procesan por secciones. |
-
-## Decisiones del Usuario (Resueltas)
-- ✅ **Sin login** — App 100% personal, un solo usuario
-- ✅ **Dark mode only** — Sin modo claro, sin toggle. Diseño oscuro minimalista
-- ✅ **API key disponible** — El usuario ya tiene su key de NVIDIA
-- ✅ **Todo se guarda** — Exámenes, respuestas, resúmenes, explicaciones. Para estudio real.
-- ✅ **Diseño minimalista** — Sin gradientes, sin excesos. Limpio, funcional, sobrio.
-- ✅ **Rate limit: 40 RPM** — API gratis. Implementar rate limiting y cola de requests.
+|---|---|---|
+| User NVIDIA API key leak | Critical | AES-256-GCM authenticated encryption at rest; keys never returned to client after submission; masked display (`nvapi-****...****`). |
+| Insecure Direct Object Reference (IDOR) | Critical | Strict relational constraints (`user_id` on all entities) and server-side session checks on every database access. |
+| Vercel Serverless filesystem limits | High | In-memory stream processing for document extraction; transition database access from local file to LibSQL/Turso over HTTP. |
+| Password cracking / dictionary attacks | High | Argon2id with memory-hard parameters; rate-limiting login attempts by IP and account. |
+| Ingestion file size overloads lambda memory | Medium | Enforce strict 10MB payload limit on uploads; validate MIME types before processing. |

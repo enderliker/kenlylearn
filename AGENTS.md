@@ -1,62 +1,75 @@
-# AGENTS.md — Autonomous Agent Operating Guidelines
+# AGENTS.md — Autonomous Agent Operating Guidelines & Security Protocols
 
-This repository (`study-ai`) is a high-performance, local-first academic study platform. Autonomous AI agents modifying or extending this codebase must strictly adhere to the standards and operational boundaries documented below.
-
----
-
-## 1. Core Engineering Principles
-
-1. **Simplicity Over Abstraction**: Never introduce unnecessary design patterns, micro-packages, or speculative abstractions. Prefer direct, readable, and auditable code.
-2. **Language Consistency**: All code, symbol names, types, database entities, error messages, and internal documentation MUST be in **English**.
-3. **Design Language**: Strictly dark mode only (`#09090b` zinc base). No gradients, saturated animations, or playful/educational themes. Clean, high-density, serious academic aesthetic.
-4. **Local-First & Privacy**: All student data, raw materials, embeddings, and exam results belong in the local SQLite database (`study-ai.db`). Never introduce external logging, telemetry, or remote storage dependencies.
-5. **No Blind Overwriting**: Always inspect `tasks/plan.md` and `tasks/todo.md` before starting work. Keep the task checklist updated.
+This repository (`study-ai`) is a production-grade, multi-tenant academic study and active-recall platform deployed to **Vercel**. Every autonomous AI agent operating on this codebase must adhere strictly to the engineering standards and non-negotiable security protocols documented below.
 
 ---
 
-## 2. Technology Stack & Architectural Boundaries
+## 1. Prime Directive: Uncompromising User Security & Privacy
+
+**User credentials, personal study materials, and API keys must be protected at all costs.** Security is not an afterthought or an optional checklist item; it dictates every architectural choice, query, and API handler.
+
+### Core Security Mandates:
+1. **Zero Plaintext Secrets**:
+   - Passwords must **NEVER** be stored in plaintext. They must be salted and hashed using **Argon2id** (OWASP recommended parameters: minimum memory 64 MiB, 3 iterations, 1 parallelism thread).
+   - User-supplied third-party API keys (e.g., NVIDIA NIM API keys) must be encrypted at rest using authenticated encryption: **AES-256-GCM** with unique initialization vectors (IV) and authentication tags per record.
+   - Master encryption keys (`ENCRYPTION_SECRET`) must be sourced strictly from environment variables and never logged, exposed via APIs, or written to disk.
+2. **Absolute Multi-Tenant Isolation (Anti-IDOR)**:
+   - Every single database table storing user data (`materials`, `exams`, `questions`, `user_answers`, `generated_content`, `subjects`) **MUST** include a non-nullable `user_id` foreign key.
+   - Every SQL query, mutation, select, or deletion **MUST** explicitly filter by the authenticated user's ID (`eq(table.userId, session.user.id)`).
+   - Never trust client-supplied entity IDs without verifying ownership in the same transaction or query.
+3. **Defense-in-Depth for Authentication & Sessions**:
+   - Session cookies must strictly enforce: `HttpOnly`, `Secure` (production), `SameSite=Lax` or `Strict`, and `Path=/`.
+   - OAuth providers (Google, GitHub) must implement state parameter verification to prevent CSRF.
+   - Credentials login must enforce rate-limiting per IP and per account to mitigate brute-force and credential stuffing attacks.
+4. **Zero-Leakage Telemetry & Logging**:
+   - Never log authorization headers, passwords, hashes, session tokens, or decrypted user API keys in console logs, audit logs, or error responses.
+   - API error responses to clients must return generic status messages (`{ "error": "Invalid credentials" }`) without exposing database stack traces, table names, or internal error objects.
+
+---
+
+## 2. Architectural Boundaries & Vercel Serverless Requirements
+
+- **Runtime Target**: Vercel Serverless Functions (Node.js runtime).
+- **Ephemeral Filesystems**: Vercel functions have read-only filesystems with an ephemeral `/tmp` directory. Never rely on permanent local disk storage (`uploads/` or local `study-ai.db` in production).
+- **Database Architecture**: SQLite/LibSQL via Drizzle ORM (`@libsql/client` or Turso/Serverless PostgreSQL). Local development may use local LibSQL/SQLite, while production connects over HTTPS/WSS via serverless connection pooling.
+- **Inference Pipeline**: NVIDIA NIM OpenAI-compatible API (`https://integrate.api.nvidia.com/v1`).
+- **Target LLM**: `nvidia/nemotron-3-ultra-550b-a55b` (MoE architecture, up to 1M context tokens).
+- **Rate-Limiting**: Enforce user-level sliding window rate limiting (respecting NVIDIA's 40 RPM quota per key).
+
+---
+
+## 3. Technology Stack
 
 - **Framework**: Next.js 14 (App Router) with TypeScript (Strict).
-- **Styling**: Tailwind CSS with custom CSS variables defined in `src/app/globals.css`.
-- **Database**: SQLite accessed via `better-sqlite3` and `drizzle-orm`. Migrations managed via `drizzle-kit`.
-- **Inference**: NVIDIA NIM OpenAI-compatible API (`https://integrate.api.nvidia.com/v1`).
-- **Target Model**: `nvidia/nemotron-3-ultra-550b-a55b` (MoE architecture, up to 1M context tokens).
-- **Document Processing**: `pdf-parse` for PDFs and `tesseract.js` for OCR.
+- **Authentication**: NextAuth.js (Auth.js v5) with Drizzle Adapter:
+  - OAuth: Google OAuth 2.0 & GitHub OAuth.
+  - Credentials: Email + Argon2id hashed passwords.
+- **Database & ORM**: Drizzle ORM with LibSQL/SQLite schema (`src/db/schema.ts`).
+- **Cryptography**: Node.js `node:crypto` (AES-256-GCM) + `@node-rs/argon2` or `argon2`.
+- **Styling**: Tailwind CSS with custom CSS variables (`src/app/globals.css`).
+- **Design System**: Strictly dark mode only (`#09090b` zinc base). No saturated animations, playful educational themes, or unnecessary gradients. Serious, high-density academic aesthetic.
 
 ---
 
-## 3. Rate-Limiting & API Rules
+## 4. Coding Standards & Conventions
 
-- **Hard Limit**: NVIDIA free tier enforces a **40 requests per minute (RPM)** rate limit.
-- **Rule**: Every outgoing request to NVIDIA NIM MUST pass through `rateLimiter.throttle()` located in `src/lib/ai/rate-limiter.ts`. Never bypass the limiter.
-- **Thinking / Reasoning**: For structured extractions and exams, enable reasoning mode (`enable_thinking: true`) only when evaluating free-form student responses or generating multi-step exam questions.
-
----
-
-## 4. Database & Schema Rules
-
-- All table definitions live in `src/db/schema.ts`.
-- Primary keys must use UUID strings: `text('id').primaryKey()`.
-- Timestamps must default to `sql`(CURRENT_TIMESTAMP)``.
-- Foreign keys must declare explicit cascade rules: `.references(() => parent.id, { onDelete: 'cascade' })`.
-- Never mutate the SQLite file directly during code changes; use Drizzle schema and `pnpm db:push`.
+1. **Language Consistency**: 100% of all code, identifiers, types, schemas, comments, commits, and documentation must be in **English**.
+2. **TypeScript Integrity**: No `any`. Strict typings exported from `src/types/index.ts` or inferred from Drizzle schemas (`typeof table.$inferSelect`).
+3. **Components**: Functional components only. Client components declare `'use client'` as line 1.
+4. **Server Actions / Route Handlers**:
+   - Always authenticate incoming requests first (`const session = await auth()`).
+   - Validate and sanitize all incoming payloads with Zod before processing.
+   - Check resource ownership prior to mutation or retrieval.
+5. **Formatting**: 2-space indentation, single quotes for strings, semicolons required.
 
 ---
 
-## 5. Coding Standards
+## 5. Verification Checklist Before Committing
 
-- **TypeScript**: No `any`. Use strict interfaces exported from `src/types/index.ts` or inferred Drizzle types (`typeof table.$inferSelect`).
-- **Components**: Functional components only. Client components must declare `'use client'` as their first line.
-- **Server Actions / Route Handlers**: Validate all incoming payloads before processing. Return standard JSON error responses `{ error: string }` with appropriate HTTP status codes.
-- **Formatting**: 2-space indentation, single quotes for strings, semicolons required.
-
----
-
-## 6. Verification Checklist Before Committing
-
-Before completing any task or opening a pull request, ensure:
-- [ ] No compilation or TypeScript errors.
-- [ ] No leftover `console.log` debugging statements.
-- [ ] No secrets or API keys committed (verify `.env*` is gitignored).
-- [ ] Tasks in `tasks/todo.md` are checked off accurately.
-- [ ] Verified that changes adhere to the minimalist dark design language.
+Before closing any task or committing changes:
+- [ ] No compilation or TypeScript errors (`tsc --noEmit`).
+- [ ] Authentication and authorization checked on all touched routes.
+- [ ] Every database query enforces tenant isolation (`userId` filter).
+- [ ] No secrets, hashes, or API keys exposed in responses or console logs.
+- [ ] Tasks in `tasks/todo.md` updated accurately.
+- [ ] Code strictly follows English naming and minimalist dark design language.
