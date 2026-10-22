@@ -8,6 +8,7 @@
 [![SQLite](https://img.shields.io/badge/SQLite-WAL%20Mode-003B57?style=flat-square&logo=sqlite)](https://sqlite.org/)
 [![NVIDIA NIM](https://img.shields.io/badge/NVIDIA%20NIM-Nemotron--3%20Ultra-76B900?style=flat-square&logo=nvidia)](https://build.nvidia.com/)
 [![CI / CD](https://github.com/enderliker/kenlylearn/actions/workflows/ci.yml/badge.svg)](https://github.com/enderliker/kenlylearn/actions/workflows/ci.yml)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-kenlylearn-orange?style=flat-square&logo=buy-me-a-coffee)](https://buymeacoffee.com/kenlylearn)
 
 ---
 
