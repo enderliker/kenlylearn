@@ -7,7 +7,6 @@ import {
   FolderKanban, 
   UploadCloud, 
   FileCheck2, 
-  Sparkles,
   Settings
 } from 'lucide-react';
 import { KenlySymbol } from '@/components/brand/logo';
@@ -87,23 +86,8 @@ export function Sidebar() {
       </div>
 
       <div className="mt-auto">
-        {/* User Account State */}
+        {/* User Account Navigation */}
         <UserNav />
-
-        {/* Model & System Status */}
-        <div className="p-4 border-t border-zinc-800/80">
-          <div className="bg-zinc-900/70 border border-zinc-800/80 rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="text-xs font-medium text-zinc-300">NVIDIA Nemotron-3</span>
-            </div>
-            <p className="text-[11px] text-zinc-500 font-mono">Ultra 550B • 1M context</p>
-            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-zinc-800">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] text-zinc-400">40 RPM limit guard active</span>
-            </div>
-          </div>
-        </div>
       </div>
     </aside>
   );

@@ -1,4 +1,4 @@
-import { FileCheck2, Sparkles, CheckCircle, HelpCircle, Edit3 } from 'lucide-react';
+import { FileCheck2, CheckCircle, HelpCircle, Edit3, Type } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -18,14 +18,14 @@ export default function ExamsPage() {
     },
     {
       title: 'Open-Ended Synthesis',
-      description: 'Answer in your own words. Nemotron evaluates reasoning depth with AI feedback.',
+      description: 'Free-form answers evaluated against key rubrics and conceptual completeness.',
       icon: Edit3,
       tag: 'Deep Reasoning',
     },
     {
       title: 'Fill-in-the-Blank',
       description: 'Key vocabulary, formula variables, or technical terms missing inline.',
-      icon: Sparkles,
+      icon: Type,
       tag: 'Recall',
     },
   ];
@@ -34,9 +34,9 @@ export default function ExamsPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-zinc-100">Mock Exams</h2>
+          <h2 className="text-base font-semibold text-zinc-100">Mock Exams</h2>
           <p className="text-xs text-zinc-400">
-            Active recall tests with automated AI grading and feedback
+            Active recall assessments and diagnostic self-evaluations
           </p>
         </div>
       </div>

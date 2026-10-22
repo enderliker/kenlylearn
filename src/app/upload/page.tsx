@@ -6,9 +6,9 @@ export default function UploadPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-zinc-100">Upload Study Materials</h2>
+        <h2 className="text-base font-semibold text-zinc-100">Upload Study Materials</h2>
         <p className="text-xs text-zinc-400">
-          Add documents or captures. Nemotron-3 Ultra processes and indexes them for summaries and tests.
+          Import lecture notes, textbooks, slides, and academic papers to generate concept outlines and active recall assessments.
         </p>
       </div>
 
@@ -35,11 +35,11 @@ export default function UploadPage() {
       </div>
 
       <Card className="space-y-3">
-        <h3 className="text-sm font-semibold text-zinc-200">Processing Specifications</h3>
-        <ul className="text-xs text-zinc-400 space-y-2 list-disc list-inside">
-          <li>Text is automatically extracted from PDFs with structure preserved.</li>
-          <li>Handwritten or photo notes undergo client/server OCR using Tesseract.</li>
-          <li>All materials are saved locally in SQLite and retained for longitudinal tracking.</li>
+        <h3 className="text-xs font-semibold text-zinc-200">Supported Ingestion Pipeline</h3>
+        <ul className="text-xs text-zinc-400 space-y-2 list-disc list-inside leading-relaxed">
+          <li>Digital textbooks and lecture decks retain headings, formulas, and structural context.</li>
+          <li>Handwritten whiteboards or paper notes undergo high-resolution optical character recognition.</li>
+          <li>All uploaded documents are isolated to your private account workspace.</li>
         </ul>
       </Card>
     </div>
