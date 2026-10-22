@@ -13,7 +13,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@ai-sdk/openai-compatible": "^0.1.11",
+    "@ai-sdk/openai-compatible": "^3.0.71",
     "@auth/drizzle-adapter": "^1.7.4",
     "@libsql/client": "^0.14.0",
     "@node-rs/argon2": "^2.0.2",
