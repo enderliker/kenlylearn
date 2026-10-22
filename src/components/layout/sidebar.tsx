@@ -8,8 +8,10 @@ import {
   UploadCloud, 
   FileCheck2, 
   Sparkles,
-  BookOpen
+  Settings
 } from 'lucide-react';
+import { KenlySymbol } from '@/components/brand/logo';
+import { UserNav } from '@/components/layout/user-nav';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -33,6 +35,11 @@ const navItems = [
     href: '/exams',
     icon: FileCheck2,
   },
+  {
+    label: 'Settings',
+    href: '/settings',
+    icon: Settings,
+  },
 ];
 
 export function Sidebar() {
@@ -44,8 +51,8 @@ export function Sidebar() {
         {/* Brand Header */}
         <div className="h-16 flex items-center px-6 border-b border-zinc-800/80">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-100 group-hover:border-zinc-700 transition-colors">
-              <BookOpen className="w-4 h-4 text-indigo-400" />
+            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:border-zinc-700 transition-colors p-1">
+              <KenlySymbol size={18} />
             </div>
             <div className="flex flex-col">
               <span className="font-semibold text-sm tracking-tight text-zinc-100">KenlyLearn</span>
@@ -79,17 +86,22 @@ export function Sidebar() {
         </nav>
       </div>
 
-      {/* Model & System Status */}
-      <div className="p-4 border-t border-zinc-800/80">
-        <div className="bg-zinc-900/70 border border-zinc-800/80 rounded-lg p-3">
-          <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span className="text-xs font-medium text-zinc-300">NVIDIA Nemotron-3</span>
-          </div>
-          <p className="text-[11px] text-zinc-500 font-mono">Ultra 550B • 1M context</p>
-          <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-zinc-800">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] text-zinc-400">40 RPM limit guard active</span>
+      <div className="mt-auto">
+        {/* User Account State */}
+        <UserNav />
+
+        {/* Model & System Status */}
+        <div className="p-4 border-t border-zinc-800/80">
+          <div className="bg-zinc-900/70 border border-zinc-800/80 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="text-xs font-medium text-zinc-300">NVIDIA Nemotron-3</span>
+            </div>
+            <p className="text-[11px] text-zinc-500 font-mono">Ultra 550B • 1M context</p>
+            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-zinc-800">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] text-zinc-400">40 RPM limit guard active</span>
+            </div>
           </div>
         </div>
       </div>

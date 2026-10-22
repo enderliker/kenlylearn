@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="256" height="256" role="img" aria-label="Kenly">
+  <title>Kenly</title>
+    <rect x="3" y="3" width="11" height="42" rx="2.5" fill="#f4f4f5"/>
+    <path d="M41 6 L26 24 L41 42" fill="none" stroke="#6366f1" stroke-width="9" stroke-linecap="butt" stroke-linejoin="miter"/>
+</svg>

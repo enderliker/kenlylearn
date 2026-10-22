@@ -8,6 +8,9 @@ const routeTitles: Record<string, { title: string; subtitle: string }> = {
   '/subjects': { title: 'Subjects', subtitle: 'Academic domains and organized study materials' },
   '/upload': { title: 'Upload Materials', subtitle: 'Import PDFs, images, or notes for AI synthesis' },
   '/exams': { title: 'Mock Exams', subtitle: 'Interactive practice assessments and active recall' },
+  '/settings': { title: 'Settings', subtitle: 'Configure credentials, encryption keys, and preferences' },
+  '/login': { title: 'Sign In', subtitle: 'Access your private workspace' },
+  '/register': { title: 'Create Account', subtitle: 'Set up your encrypted study workspace' },
 };
 
 export function Header() {

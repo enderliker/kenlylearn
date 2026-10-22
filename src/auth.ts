@@ -8,6 +8,7 @@ import { users, accounts, sessions, verificationTokens } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { verifyPassword } from '@/lib/crypto/password';
 import { z } from 'zod';
+import { authConfig } from '@/auth.config';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -15,6 +16,7 @@ const loginSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
@@ -23,10 +25,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   }),
   session: {
     strategy: 'jwt',
-  },
-  pages: {
-    signIn: '/login',
-    error: '/login',
   },
   providers: [
     Google({
