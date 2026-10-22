@@ -1,10 +1,16 @@
-import { UploadCloud, FileText, Image as ImageIcon, File } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { UploadForm } from '@/components/upload/upload-form';
 import { Card } from '@/components/ui/card';
+import { FileText, Image as ImageIcon, FileCode, Shield } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Upload Study Materials — KenlyLearn',
+  description: 'Upload textbooks, lecture notes, and papers for automated structuring and mock exam synthesis',
+};
 
 export default function UploadPage() {
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h2 className="text-base font-semibold text-zinc-100">Upload Study Materials</h2>
         <p className="text-xs text-zinc-400">
@@ -12,36 +18,39 @@ export default function UploadPage() {
         </p>
       </div>
 
-      <div className="border-2 border-dashed border-zinc-800 hover:border-zinc-700 transition-colors rounded-xl p-12 flex flex-col items-center justify-center text-center space-y-4 bg-zinc-950/60">
-        <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-indigo-400">
-          <UploadCloud className="w-6 h-6" />
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-zinc-200">
-            Drag and drop study files here, or click to browse
-          </p>
-          <p className="text-xs text-zinc-500 max-w-sm">
-            Supported formats: Textbooks & slides (PDF), whiteboard/notes captures (JPG, PNG via OCR), and plain text documents (TXT, MD).
-          </p>
-        </div>
-        <div className="flex items-center gap-4 pt-1 text-[11px] text-zinc-500">
-          <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> PDF</span>
-          <span className="flex items-center gap-1.5"><ImageIcon className="w-3.5 h-3.5" /> PNG / JPG</span>
-          <span className="flex items-center gap-1.5"><File className="w-3.5 h-3.5" /> TXT / Markdown</span>
-        </div>
-        <Button variant="secondary" size="sm" className="mt-2">
-          Select Files from Device
-        </Button>
-      </div>
+      {/* Upload Zone & Form */}
+      <UploadForm />
 
-      <Card className="space-y-3">
-        <h3 className="text-xs font-semibold text-zinc-200">Supported Ingestion Pipeline</h3>
-        <ul className="text-xs text-zinc-400 space-y-2 list-disc list-inside leading-relaxed">
-          <li>Digital textbooks and lecture decks retain headings, formulas, and structural context.</li>
-          <li>Handwritten whiteboards or paper notes undergo high-resolution optical character recognition.</li>
-          <li>All uploaded documents are isolated to your private account workspace.</li>
-        </ul>
-      </Card>
+      {/* Format Specifications & Privacy Architecture */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="space-y-3 p-5 bg-zinc-900/30 border-zinc-800/80">
+          <h3 className="text-xs font-semibold text-zinc-200">Supported Formats</h3>
+          <div className="space-y-2 text-xs text-zinc-400">
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
+              <span><strong>PDF Documents:</strong> Textbooks, syllabus outlines, and research papers with preserved headings.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span><strong>Image Captures:</strong> Whiteboard diagrams, blackboard formulas, and handwritten notes via OCR.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FileCode className="w-4 h-4 text-amber-400 shrink-0" />
+              <span><strong>Plain Text & Markdown:</strong> Course summaries, lecture transcripts, and markdown files.</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="space-y-3 p-5 bg-zinc-900/30 border-zinc-800/80">
+          <div className="flex items-center gap-2 text-zinc-200">
+            <Shield className="w-4 h-4 text-indigo-400" />
+            <h3 className="text-xs font-semibold">Private & Ephemeral Processing</h3>
+          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            All text extractions are processed securely on serverless workers. Your personal documents are isolated strictly to your account and never shared with other tenants or used for external model training.
+          </p>
+        </Card>
+      </div>
     </div>
   );
 }

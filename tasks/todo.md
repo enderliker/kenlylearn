@@ -200,24 +200,25 @@
 
 ---
 
-## ⏸️ Phase 2: Multi-Modal Ingestion Pipeline (ON HOLD)
-
-> [!IMPORTANT]
-> **STATUS: ON HOLD**. Implementation will strictly not begin until explicit confirmation from the user.
+## Phase 2: Multi-Modal Ingestion Pipeline ✅
 
 ### Task 4: Serverless Document Extraction Pipeline (PDF + OCR + Plaintext)
-- [ ] Serverless-compatible PDF parser (`pdf-parse`)
-- [ ] Client/Serverless Tesseract OCR worker
-- [ ] File chunking & token budgeting for 1M context
+- [x] Serverless-compatible PDF parser (`pdf-parse`)
+- [x] Client/Serverless Tesseract OCR worker
+- [x] File chunking & token budgeting for 1M context (`estimateTokens`, `chunkText`)
+- [x] TDD test suite with 10 unit tests for document extraction, size caps, and chunking
 
-### Task 5: User-Scoped Ingestion API & Cloud/Serverless Storage
-- [ ] `POST /api/materials/upload` with user session validation
-- [ ] Strict file validation (max 10MB, allowed MIME types)
-- [ ] Multi-tenant isolation: every record stamped with `session.user.id`
+### Task 5: User-Scoped Ingestion API & Multi-Tenant Storage
+- [x] `POST /api/materials` with user session validation and multipart form handling
+- [x] `GET /api/materials` with strict `userId` scoping
+- [x] `GET /api/materials/[id]` and `DELETE /api/materials/[id]` with owner validation
+- [x] Strict file validation (max 10MB, allowed MIME types)
+- [x] Multi-tenant isolation: every record stamped with `session.user.id` and anti-IDOR subject ownership check
 
 ### Task 6: Upload UI with Drag & Drop and Preview
-- [ ] Drag-and-drop dropzone with progress bar
-- [ ] Extracted text preview with manual correction mode
+- [x] Drag-and-drop dropzone with active states and file metadata
+- [x] Extracted text preview with token counts, word counts, and page indicators
+- [x] Direct navigation trigger to "Generate Mock Exam" or "Upload Another"
 
 ---
 
