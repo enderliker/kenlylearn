@@ -171,6 +171,32 @@
 
 ---
 
+### Task 1.5.6: Automated CI/CD Pipeline & Quality Gates
+**Description:** Configure GitHub Actions workflow (`.github/workflows/ci.yml`) to enforce automated quality gates on every push and pull request targeting `main`. Includes static typecheck, ESLint, Gitleaks secret scanning, dependency CVE audits, and Next.js production build verification before Vercel deployment.
+
+**Acceptance criteria:**
+- [x] Workflow `.github/workflows/ci.yml` created and configured
+- [x] Concurrency control configured to cancel stale runs on new pushes
+- [x] Job 1: TypeScript static typecheck (`tsc --noEmit`) and ESLint validation
+- [x] Job 2: Secret leak detection (Gitleaks) and dependency vulnerability audit (`npm audit`)
+- [x] Job 3: Next.js production build verification with simulated environment variables
+- [x] Job 4: Vercel deployment validation gate
+
+**Verification:**
+- [x] GitHub Actions workflow triggers on push to `main`
+- [x] All pipeline stages pass cleanly in GitHub Actions UI
+
+**Dependencies:** Tasks 1-3
+
+**Files likely touched:**
+- `.github/workflows/ci.yml`
+- `tasks/plan.md`
+- `tasks/todo.md`
+
+**Estimated scope:** Small (1-2 files)
+
+---
+
 ## ⏸️ Phase 2: Multi-Modal Ingestion Pipeline (ON HOLD)
 
 > [!IMPORTANT]

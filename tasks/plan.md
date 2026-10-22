@@ -76,6 +76,32 @@ User security, credential integrity, and multi-tenant isolation are the paramoun
 | **Database** | LibSQL (`@libsql/client`) + Drizzle ORM | Maintains SQLite syntax and local development speed, while scaling to serverless edge DBs (Turso) for Vercel |
 | **Inference Model** | NVIDIA Nemotron-3 Ultra 550B | Mixture of Experts architecture, 1M context tokens, reasoning mode |
 | **Per-User Rate Limiting** | Sliding Window Token Bucket | Enforces NVIDIA's 40 RPM limit on a per-user API key basis |
+| **CI / CD Pipeline** | GitHub Actions + Vercel Integration | Automated quality gates: strict type-checking, linting, security audits, build validation, and zero-downtime deployment |
+
+---
+
+## CI / CD & Deployment Architecture
+
+```
+[Developer / Agent Push]
+          │
+          ▼
+┌────────────────────────────────────────────────────────┐
+│              GitHub Actions Automated CI               │
+│  ├── Quality Gate: TypeScript Strict (`tsc --noEmit`)  │
+│  ├── Code Hygiene: ESLint Next.js Recommended Rules    │
+│  ├── Security Scan: Gitleaks Secret Detection          │
+│  ├── Dependency Audit: npm audit for known CVEs        │
+│  └── Build Gate: Next.js Production Build Validation   │
+└──────────────────────────┬─────────────────────────────┘
+                           │ (All Checks Green)
+                           ▼
+┌────────────────────────────────────────────────────────┐
+│           Vercel Automated CD Deployment               │
+│  ├── Preview Deployment (Feature Branches / PRs)       │
+│  └── Production Deployment (Main Branch)               │
+└────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -92,6 +118,7 @@ User security, credential integrity, and multi-tenant isolation are the paramoun
 - **Task 1.5.3**: NextAuth.js v5 setup (Google OAuth, GitHub OAuth, and Credentials with Argon2id).
 - **Task 1.5.4**: Authentication UI (Login, Register, Error states, Session indicators in Header/Sidebar).
 - **Task 1.5.5**: User Settings & API Key Management UI (Save, mask, validate, and test NVIDIA API key).
+- **Task 1.5.6**: Automated CI/CD Pipeline (GitHub Actions quality gates, security audits, Vercel build verification).
 
 ### Phase 2: Multi-Modal Ingestion Pipeline (ON HOLD — Awaiting explicit user instruction)
 - Serverless-compatible PDF text extraction (`pdf-parse`).

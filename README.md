@@ -7,6 +7,7 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
 [![SQLite](https://img.shields.io/badge/SQLite-WAL%20Mode-003B57?style=flat-square&logo=sqlite)](https://sqlite.org/)
 [![NVIDIA NIM](https://img.shields.io/badge/NVIDIA%20NIM-Nemotron--3%20Ultra-76B900?style=flat-square&logo=nvidia)](https://build.nvidia.com/)
+[![CI / CD](https://github.com/enderliker/study-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/enderliker/study-ai/actions/workflows/ci.yml)
 
 ---
 
