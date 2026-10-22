@@ -1,4 +1,4 @@
-import { UploadCloud, FileText, Image, File } from 'lucide-react';
+import { UploadCloud, FileText, Image as ImageIcon, File } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -26,7 +26,7 @@ export default function UploadPage() {
         </div>
         <div className="flex items-center gap-4 pt-1 text-[11px] text-zinc-500">
           <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> PDF</span>
-          <span className="flex items-center gap-1.5"><Image className="w-3.5 h-3.5" /> PNG / JPG</span>
+          <span className="flex items-center gap-1.5"><ImageIcon className="w-3.5 h-3.5" /> PNG / JPG</span>
           <span className="flex items-center gap-1.5"><File className="w-3.5 h-3.5" /> TXT / Markdown</span>
         </div>
         <Button variant="secondary" size="sm" className="mt-2">

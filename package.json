@@ -7,22 +7,28 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "node --test tests/**/*.test.mjs",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^0.1.11",
+    "@auth/drizzle-adapter": "^1.7.4",
+    "@libsql/client": "^0.14.0",
+    "@node-rs/argon2": "^2.0.2",
     "ai": "^4.1.45",
     "better-sqlite3": "^11.8.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.38.4",
     "lucide-react": "^0.475.0",
     "next": "14.2.24",
+    "next-auth": "5.0.0-beta.25",
     "pdf-parse": "^1.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^3.0.1",
-    "tesseract.js": "^5.1.1"
+    "tesseract.js": "^5.1.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

@@ -1,5 +1,7 @@
 import { Material, Subject, Exam, Question, UserAnswer, GeneratedContent } from '@/db/schema';
 
+export type { UserAnswer };
+
 export type FileType = 'pdf' | 'image' | 'text';
 
 export type QuestionType = 'mcq' | 'truefalse' | 'open' | 'fillblank';

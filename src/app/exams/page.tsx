@@ -1,6 +1,5 @@
 import { FileCheck2, Sparkles, CheckCircle, HelpCircle, Edit3 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 export default function ExamsPage() {

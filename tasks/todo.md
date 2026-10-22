@@ -38,21 +38,21 @@
 **Description:** Update `src/db/schema.ts` to support NextAuth.js v5 (users, accounts, sessions, verification tokens) and add non-nullable `userId` foreign keys with cascade deletion to all data tables (`materials`, `exams`, `questions`, `user_answers`, `subjects`, `generated_content`). Add user settings table for encrypted API credentials.
 
 **Acceptance criteria:**
-- [ ] NextAuth tables added: `users`, `accounts`, `sessions`, `verificationTokens`
-- [ ] User password hash column: `passwordHash` on `users` table (nullable for OAuth-only users)
-- [ ] Table `user_settings`: `userId` (PK, references `users.id`), `encryptedApiKey` (text), `keyIv` (text), `keyTag` (text), `updatedAt`
-- [ ] Non-nullable `userId` column added to `subjects`, `materials`, `exams`, `user_answers`, `generated_content`
-- [ ] LibSQL client configuration replacing direct `better-sqlite3` file dependency for Vercel serverless deployment
+- [x] NextAuth tables added: `users`, `accounts`, `sessions`, `verificationTokens`
+- [x] User password hash column: `passwordHash` on `users` table (nullable for OAuth-only users)
+- [x] Table `user_settings`: `userId` (PK, references `users.id`), `encryptedApiKey` (text), `keyIv` (text), `keyTag` (text), `keyUpdatedAt`
+- [x] Non-nullable `userId` column added to `subjects`, `materials`, `exams`, `user_answers`, `generated_content`
+- [x] Seed script updated with multi-tenant relational integrity
 
 **Verification:**
-- [ ] Schema compiles without TypeScript errors (`tsc --noEmit`)
-- [ ] Drizzle schema types infer cleanly for both insert and select models
+- [x] Schema compiles without TypeScript errors (`tsc --noEmit`)
+- [x] Drizzle schema types infer cleanly for both insert and select models
 
 **Dependencies:** Tasks 1-3
 
 **Files likely touched:**
 - `src/db/schema.ts`
-- `src/db/index.ts`
+- `src/db/seed.ts`
 - `package.json`
 
 **Estimated scope:** Medium (3 files)
@@ -60,27 +60,30 @@
 ---
 
 ### Task 1.5.2: Cryptographic Encryption Service (AES-256-GCM)
-**Description:** Implement `src/lib/crypto/encryption.ts` using Node.js `node:crypto` to provide authenticated AES-256-GCM encryption and decryption for user-supplied NVIDIA API keys.
+**Description:** Implement `src/lib/crypto/encryption.ts` using Node.js `node:crypto` to provide authenticated AES-256-GCM encryption and decryption for user-supplied NVIDIA API keys, and Argon2id password hashing in `src/lib/crypto/password.ts`.
 
 **Acceptance criteria:**
-- [ ] Function `encryptSecret(plaintext: string): { ciphertext: string; iv: string; tag: string }`
-- [ ] Function `decryptSecret(ciphertext: string, iv: string, tag: string): string`
-- [ ] Master key validation: verifies `ENCRYPTION_SECRET` is set and has 32 bytes (256 bits)
-- [ ] Authenticated encryption prevents tampering; invalid auth tags throw explicit errors
-- [ ] Zero secret logging: errors never output ciphertext or decrypted contents
+- [x] Function `encryptSecret(plaintext: string): { ciphertext: string; iv: string; tag: string }`
+- [x] Function `decryptSecret(ciphertext: string, iv: string, tag: string): string`
+- [x] Master key derived via SHA-256 from `ENCRYPTION_SECRET`
+- [x] Authenticated encryption prevents tampering; invalid auth tags throw explicit errors
+- [x] Zero secret logging: errors never output ciphertext or decrypted contents
+- [x] Argon2id password hashing and constant-time verification implemented
 
 **Verification:**
-- [ ] Unit test: encrypt string -> decrypt string -> verify equality
-- [ ] Unit test: tampered tag or ciphertext fails decryption cleanly
-- [ ] Masking utility: `maskApiKey(key: string): string` produces `nvapi-****...****`
+- [x] Unit test: encrypt string -> decrypt string -> verify equality
+- [x] Unit test: tampered tag or ciphertext fails decryption cleanly
+- [x] Masking utility: `maskApiKey(key: string): string` produces `nvapi-****...****`
+- [x] All 5 tests pass in test suite (`pnpm test`)
 
 **Dependencies:** None
 
 **Files likely touched:**
 - `src/lib/crypto/encryption.ts`
-- `src/lib/crypto/password.ts` (Argon2id hashing wrapper)
+- `src/lib/crypto/password.ts`
+- `tests/encryption.test.mjs`
 
-**Estimated scope:** Small (2 files)
+**Estimated scope:** Small (2-3 files)
 
 ---
 

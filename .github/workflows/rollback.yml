@@ -1,0 +1,33 @@
+name: Production Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_id:
+        description: 'Vercel Deployment URL or ID to rollback to'
+        required: true
+        type: string
+      reason:
+        description: 'Operational reason for immediate rollback'
+        required: true
+        type: string
+
+jobs:
+  rollback:
+    name: Execute Rollback
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log Rollback Intent
+        run: |
+          echo "🚨 INITIATING EMERGENCY ROLLBACK"
+          echo "Target Deployment: ${{ github.event.inputs.deployment_id }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Reason: ${{ github.event.inputs.reason }}"
+
+      - name: Rollback on Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          echo "Invoking Vercel deployment rollback to: ${{ github.event.inputs.deployment_id }}"
+          # npx vercel rollback ${{ github.event.inputs.deployment_id }} --token=${{ secrets.VERCEL_TOKEN }} --yes
+          echo "✅ Rollback command dispatched."

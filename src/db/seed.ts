@@ -1,13 +1,23 @@
 import { db } from './index';
-import { subjects } from './schema';
+import { subjects, users } from './schema';
 import crypto from 'crypto';
 
 async function seed() {
-  console.log('🌱 Seeding database with initial subjects...');
+  console.log('🌱 Seeding database with initial multi-tenant test data...');
+
+  const defaultUser = {
+    id: crypto.randomUUID(),
+    name: 'Academic Researcher',
+    email: 'student@study-ai.local',
+    passwordHash: null,
+  };
+
+  db.insert(users).values(defaultUser).onConflictDoNothing().run();
 
   const initialSubjects = [
     {
       id: crypto.randomUUID(),
+      userId: defaultUser.id,
       name: 'Artificial Intelligence',
       description: 'Core concepts in Machine Learning, LLMs, neural networks, and prompt engineering',
       color: '#6366f1',
@@ -15,6 +25,7 @@ async function seed() {
     },
     {
       id: crypto.randomUUID(),
+      userId: defaultUser.id,
       name: 'World History',
       description: 'Industrial revolution, world wars, and contemporary global developments',
       color: '#f59e0b',
@@ -22,6 +33,7 @@ async function seed() {
     },
     {
       id: crypto.randomUUID(),
+      userId: defaultUser.id,
       name: 'Cellular Biology',
       description: 'Cell structure, DNA transcription, respiration, and cellular division',
       color: '#10b981',
@@ -33,7 +45,7 @@ async function seed() {
     db.insert(subjects).values(s).onConflictDoNothing().run();
   }
 
-  console.log('✅ Initial subjects seeded successfully.');
+  console.log('✅ Initial seed data generated successfully.');
 }
 
 seed().catch((err) => {
