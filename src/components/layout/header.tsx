@@ -13,8 +13,8 @@ const routeTitles: Record<string, { title: string; subtitle: string }> = {
 export function Header() {
   const pathname = usePathname();
   const current = routeTitles[pathname] || {
-    title: 'StudyAI',
-    subtitle: 'AI-Powered Deep Learning Companion',
+    title: 'KenlyLearn',
+    subtitle: 'AI-Powered Deep Learning Platform',
   };
 
   return (

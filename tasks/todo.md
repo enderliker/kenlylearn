@@ -1,4 +1,4 @@
-# StudyAI — Implementation Task List
+# KenlyLearn — Implementation Task List
 
 > Detailed task breakdown and verification checklist. All tasks follow strict acceptance criteria and the multi-tenant security architecture.
 

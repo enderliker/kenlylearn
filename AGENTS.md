@@ -1,6 +1,6 @@
 # AGENTS.md — Autonomous Agent Operating Guidelines & Security Protocols
 
-This repository (`study-ai`) is a production-grade, multi-tenant academic study and active-recall platform deployed to **Vercel**. Every autonomous AI agent operating on this codebase must adhere strictly to the engineering standards and non-negotiable security protocols documented below.
+This repository (`kenlylearn`) is a production-grade, multi-tenant academic study and active-recall platform deployed to **Vercel**. Every autonomous AI agent operating on this codebase must adhere strictly to the engineering standards and non-negotiable security protocols documented below.
 
 ---
 
@@ -30,7 +30,7 @@ This repository (`study-ai`) is a production-grade, multi-tenant academic study 
 ## 2. Architectural Boundaries & Vercel Serverless Requirements
 
 - **Runtime Target**: Vercel Serverless Functions (Node.js runtime).
-- **Ephemeral Filesystems**: Vercel functions have read-only filesystems with an ephemeral `/tmp` directory. Never rely on permanent local disk storage (`uploads/` or local `study-ai.db` in production).
+- **Ephemeral Filesystems**: Vercel functions have read-only filesystems with an ephemeral `/tmp` directory. Never rely on permanent local disk storage (`uploads/` or local `kenlylearn.db` in production).
 - **Database Architecture**: SQLite/LibSQL via Drizzle ORM (`@libsql/client` or Turso/Serverless PostgreSQL). Local development may use local LibSQL/SQLite, while production connects over HTTPS/WSS via serverless connection pooling.
 - **Inference Pipeline**: NVIDIA NIM OpenAI-compatible API (`https://integrate.api.nvidia.com/v1`).
 - **Target LLM**: `nvidia/nemotron-3-ultra-550b-a55b` (MoE architecture, up to 1M context tokens).

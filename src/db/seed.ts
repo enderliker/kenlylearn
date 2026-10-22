@@ -8,7 +8,7 @@ async function seed() {
   const defaultUser = {
     id: crypto.randomUUID(),
     name: 'Academic Researcher',
-    email: 'student@study-ai.local',
+    email: 'student@kenlylearn.local',
     passwordHash: null,
   };
 

@@ -4,8 +4,8 @@ import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 
 export const metadata: Metadata = {
-  title: 'StudyAI — AI-Powered Study Companion',
-  description: 'Personal study application powered by NVIDIA Nemotron-3 Ultra 550B',
+  title: 'KenlyLearn — AI-Powered Study Platform',
+  description: 'Production-grade knowledge ingestion and active recall platform powered by NVIDIA Nemotron-3 Ultra 550B',
 };
 
 export default function RootLayout({

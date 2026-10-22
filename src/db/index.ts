@@ -4,7 +4,7 @@ import * as schema from './schema';
 import path from 'path';
 import fs from 'fs';
 
-const dbPath = path.resolve(process.cwd(), 'study-ai.db');
+const dbPath = path.resolve(process.cwd(), 'kenlylearn.db');
 
 // Ensure uploads folder exists
 const uploadDir = path.resolve(process.cwd(), 'uploads');

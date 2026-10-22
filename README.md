@@ -1,4 +1,4 @@
-# StudyAI
+# KenlyLearn
 
 > High-throughput personal knowledge ingestion, synthesis, and active-recall engine powered by NVIDIA Nemotron-3 Ultra 550B MoE.
 
@@ -7,13 +7,13 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
 [![SQLite](https://img.shields.io/badge/SQLite-WAL%20Mode-003B57?style=flat-square&logo=sqlite)](https://sqlite.org/)
 [![NVIDIA NIM](https://img.shields.io/badge/NVIDIA%20NIM-Nemotron--3%20Ultra-76B900?style=flat-square&logo=nvidia)](https://build.nvidia.com/)
-[![CI / CD](https://github.com/enderliker/study-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/enderliker/study-ai/actions/workflows/ci.yml)
+[![CI / CD](https://github.com/enderliker/kenlylearn/actions/workflows/ci.yml/badge.svg)](https://github.com/enderliker/kenlylearn/actions/workflows/ci.yml)
 
 ---
 
 ## Overview
 
-**StudyAI** is a local-first, distraction-free study platform designed for high-density learning and mastery. Rather than acting as a generic conversational chatbot, it operates as a structured knowledge pipeline: ingest raw academic materials (textbooks, lecture slides, research papers, diagrams, notes), parse and structure the information, and leverage NVIDIA's flagship **Nemotron-3 Ultra 550B** reasoning model to generate structured executive summaries, adaptive multi-tiered explanations, and comprehensive self-evaluating mock exams.
+**KenlyLearn** is a production-grade, distraction-free study platform designed for high-density learning and mastery. Rather than acting as a generic conversational chatbot, it operates as a structured knowledge pipeline: ingest raw academic materials (textbooks, lecture slides, research papers, diagrams, notes), parse and structure the information, and leverage NVIDIA's flagship **Nemotron-3 Ultra 550B** reasoning model to generate structured executive summaries, adaptive multi-tiered explanations, and comprehensive self-evaluating mock exams.
 
 All data, generated artifacts, exam attempts, and evaluations are persisted locally in SQLite, establishing a longitudinal personal knowledge base with zero external data leakage.
 
@@ -84,7 +84,7 @@ All data, generated artifacts, exam attempts, and evaluations are persisted loca
 ## Project Structure
 
 ```
-study-ai/
+kenlylearn/
 ├── src/
 │   ├── app/                      # Next.js App Router pages and layouts
 │   │   ├── exams/                # Mock exam runner and results
@@ -128,8 +128,8 @@ study-ai/
 
 1. **Clone repository:**
    ```bash
-   git clone https://github.com/enderliker/study-ai.git
-   cd study-ai
+   git clone https://github.com/enderliker/kenlylearn.git
+   cd kenlylearn
    ```
 
 2. **Configure environment variables:**

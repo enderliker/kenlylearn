@@ -1,8 +1,8 @@
-# Implementation Plan: StudyAI — Multi-Tenant Knowledge Retention Platform
+# Implementation Plan: KenlyLearn — Multi-Tenant Knowledge Retention Platform
 
 ## Overview
 
-StudyAI is transitioning from a local personal experiment into a **production-ready, public multi-tenant SaaS application** designed for deployment on **Vercel**. Students and researchers authenticate via OAuth (GitHub, Google) or traditional credentials (Email + Password with **Argon2id** hashing). 
+KenlyLearn is a **production-grade, multi-tenant academic study platform** designed for deployment on **Vercel**. Students and researchers authenticate via OAuth (GitHub, Google) or traditional credentials (Email + Password with **Argon2id** hashing). 
 
 Each user configures their own personal **NVIDIA NIM API Key** via a secure settings dashboard. The key is encrypted at rest using **AES-256-GCM**. The backend decrypts the user's key strictly in-memory during inference requests to `nvidia/nemotron-3-ultra-550b-a55b` (MoE architecture, up to 1M context tokens), generating executive study summaries, multi-tier conceptual explanations, and active-recall mock examinations.
 

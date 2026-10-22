@@ -48,8 +48,8 @@ export function Sidebar() {
               <BookOpen className="w-4 h-4 text-indigo-400" />
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold text-sm tracking-tight text-zinc-100">StudyAI</span>
-              <span className="text-[10px] text-zinc-500 font-mono tracking-wider">PERSONAL</span>
+              <span className="font-semibold text-sm tracking-tight text-zinc-100">KenlyLearn</span>
+              <span className="text-[10px] text-zinc-500 font-mono tracking-wider">WORKSPACE</span>
             </div>
           </Link>
         </div>
